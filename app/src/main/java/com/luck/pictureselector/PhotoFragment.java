@@ -630,6 +630,7 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                 tv_select_num.setText(ValueOf.toString(maxSelectNum));
                 mAdapter.setSelectMax(maxSelectNum);
                 break;
+            default:
         }
     }
 
@@ -752,6 +753,7 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                 isWeChatStyle = true;
                 getWeChatStyle();
                 break;
+            default:
         }
     }
 
@@ -1206,6 +1208,7 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                     cb_showCropGrid.setChecked(true);
                 }
                 break;
+            default:
         }
     }
 

@@ -131,7 +131,7 @@ public class GridImageAdapter extends
     }
 
     private boolean isShowAddItem(int position) {
-        int size = list.size() == 0 ? 0 : list.size();
+        int size = list.size();
         return position == size;
     }
 

@@ -26,7 +26,6 @@ public class AndroidQTransformUtils {
      * #耗时操作需要放在子线程中操作
      *
      * @param ctx
-     * @param uri
      * @param mineType
      * @param customFileName
      * @return
@@ -73,8 +72,7 @@ public class AndroidQTransformUtils {
      * @param outUri
      */
     public static boolean copyPathToDCIM(Context context, File inFile, Uri outUri) {
-        try {
-            OutputStream fileOutputStream = context.getContentResolver().openOutputStream(outUri);
+        try( OutputStream fileOutputStream = context.getContentResolver().openOutputStream(outUri)) {
             return PictureFileUtils.bufferCopy(inFile, fileOutputStream);
         } catch (Exception e) {
             e.printStackTrace();

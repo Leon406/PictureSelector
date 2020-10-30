@@ -25,7 +25,7 @@ public class App extends Application implements IApp, CameraXConfig.Provider {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        
         /** PictureSelector日志管理配制开始 **/
         // PictureSelector 绑定监听用户获取全局上下文或其他...
         PictureAppMaster.getInstance().setApp(this);

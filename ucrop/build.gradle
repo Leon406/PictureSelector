@@ -9,7 +9,7 @@ android {
         targetSdkVersion cfgs.targetSdkVersion
         versionCode 24
         versionName "2.2.4-non-native"
-
+//        applicationId "com.yalantis.ucrop"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

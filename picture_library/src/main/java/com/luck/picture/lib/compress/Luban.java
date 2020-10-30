@@ -348,7 +348,9 @@ public class Luban implements Handler.Callback {
 
     @Override
     public boolean handleMessage(Message msg) {
-        if (mCompressListener == null) return false;
+        if (mCompressListener == null) {
+            return false;
+        }
 
         switch (msg.what) {
             case MSG_COMPRESS_START:
@@ -360,6 +362,7 @@ public class Luban implements Handler.Callback {
             case MSG_COMPRESS_ERROR:
                 mCompressListener.onError((Throwable) msg.obj);
                 break;
+            default:
         }
         return false;
     }
@@ -419,8 +422,6 @@ public class Luban implements Handler.Callback {
          * 扩展符合PictureSelector的压缩策略
          *
          * @param media LocalMedia对象
-         * @param <T>
-         * @return
          */
         private Builder load(final LocalMedia media) {
             mStreamProviders.add(new InputStreamAdapter() {

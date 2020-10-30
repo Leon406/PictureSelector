@@ -159,8 +159,6 @@ public class PicturePlayAudioActivity extends PictureBaseActivity implements Vie
 
     /**
      * 停止播放
-     *
-     * @param path
      */
     public void stop(String path) {
         if (mediaPlayer != null) {
