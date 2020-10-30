@@ -60,7 +60,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public int recordVideoSecond;
     public int recordVideoMinSecond;
     public int minimumCompressSize;
-    public int imageSpanCount;
+    public int imageSpanCount = 4;
     public int aspect_ratio_x;
     public int aspect_ratio_y;
     public int cropWidth;
@@ -144,7 +144,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public String originalPath;
     public String cameraPath;
     public int cameraMimeType;
-    public int pageSize;
+    public int pageSize = PictureConfig.MAX_PAGE_SIZE;
     public boolean isPageStrategy;
     public boolean isFilterInvalidFile;
     public boolean isMaxSelectEnabledMask;

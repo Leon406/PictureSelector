@@ -147,9 +147,9 @@ public final class LocalMediaPageLoader {
     }
 
 
-    public LocalMediaPageLoader(Context context, PictureSelectionConfig config) {
+    public LocalMediaPageLoader(Context context) {
         this.mContext = context;
-        this.config = config;
+        this.config = PictureSelectionConfig.getInstance();
     }
 
     private static final String[] PROJECTION_29 = {
@@ -517,7 +517,7 @@ public final class LocalMediaPageLoader {
 
     private String getPageSelection(long bucketId) {
         String durationCondition = getDurationCondition(0, 0);
-        boolean isSpecifiedFormat = !TextUtils.isEmpty(config.specifiedFormat);
+        boolean isQueryFormat = !TextUtils.isEmpty(config.specifiedFormat);
         switch (config.chooseMode) {
             case PictureConfig.TYPE_ALL:
                 if (bucketId == -1) {
@@ -535,38 +535,42 @@ public final class LocalMediaPageLoader {
                 // Gets the image of the specified type
                 if (bucketId == -1) {
                     // ofAll
-                    if (isSpecifiedFormat) {
+                    if (isQueryFormat) {
                         return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-                                + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF + " AND " + MediaStore.MediaColumns.MIME_TYPE + "='" + config.specifiedFormat + "'")
+                                + (" AND " + MediaStore.MediaColumns.MIME_TYPE + "='" + config.specifiedFormat + "'")
+                                + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
+                    } else {
+                        return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                                + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF)
                                 + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
                     }
-                    return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-                            + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF)
-                            + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
                 }
                 // Gets the specified album directory
-                if (isSpecifiedFormat) {
+                if (isQueryFormat) {
                     return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
                             + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF + " AND " + MediaStore.MediaColumns.MIME_TYPE + "='" + config.specifiedFormat + "'")
                             + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
+                } else {
+                    return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
+                            + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF)
+                            + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
                 }
-                return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
-                        + (config.isGif ? "" : " AND " + MediaStore.MediaColumns.MIME_TYPE + NOT_GIF)
-                        + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
             case PictureConfig.TYPE_VIDEO:
             case PictureConfig.TYPE_AUDIO:
                 if (bucketId == -1) {
                     // ofAll
-                    if (isSpecifiedFormat) {
+                    if (isQueryFormat) {
                         return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + MediaStore.MediaColumns.MIME_TYPE + "='" + config.specifiedFormat + "'" + " AND " + durationCondition + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
+                    } else {
+                        return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + durationCondition + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
                     }
-                    return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + durationCondition + ") AND " + MediaStore.MediaColumns.SIZE + ">0";
                 }
                 // Gets the specified album directory
-                if (isSpecifiedFormat) {
+                if (isQueryFormat) {
                     return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + MediaStore.MediaColumns.MIME_TYPE + "='" + config.specifiedFormat + "'" + " AND " + durationCondition + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
+                } else {
+                    return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + durationCondition + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
                 }
-                return "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + durationCondition + ") AND " + COLUMN_BUCKET_ID + "=? AND " + MediaStore.MediaColumns.SIZE + ">0";
         }
         return null;
     }
@@ -705,12 +709,11 @@ public final class LocalMediaPageLoader {
 
     private static LocalMediaPageLoader instance;
 
-    public static LocalMediaPageLoader getInstance(Context context, PictureSelectionConfig
-            config) {
+    public static LocalMediaPageLoader getInstance(Context context) {
         if (instance == null) {
             synchronized (LocalMediaPageLoader.class) {
-                if (instance == null) {
-                    instance = new LocalMediaPageLoader(context.getApplicationContext(), config);
+                if (LocalMediaPageLoader.instance == null) {
+                    LocalMediaPageLoader.instance = new LocalMediaPageLoader(context.getApplicationContext());
                 }
             }
         }
