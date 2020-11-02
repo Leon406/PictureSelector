@@ -12,11 +12,15 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -63,10 +67,13 @@ import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.StringUtils;
 import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.picture.lib.tools.ValueOf;
+import com.luck.picture.lib.widget.CameraPreviewView;
 import com.luck.picture.lib.widget.FolderPopWindow;
 import com.luck.picture.lib.widget.RecyclerPreloadView;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.CutInfo;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -103,6 +110,10 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     private long intervalClickTime = 0;
     private int allFolderSize;
     private int mOpenCameraCount;
+    //added by leon
+    private FrameLayout surf;
+    private FrameLayout mask;
+    private CameraPreviewView camera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +157,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     public int getResourceId() {
         return R.layout.picture_selector;
     }
-
+    private int sumScroll;
     @Override
     protected void initWidgets() {
         super.initWidgets();
@@ -229,6 +240,49 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 config.isCheckOriginalImage = isChecked;
             });
         }
+
+        surf = (FrameLayout) findViewById(R.id.surf);
+
+        camera = (CameraPreviewView) findViewById(R.id.camera);
+        mask = (FrameLayout) findViewById(R.id.mask);
+
+        surf.setVisibility(config.isCamera ? View.VISIBLE : View.GONE);
+
+        //照相机
+        ViewGroup.LayoutParams params = mask.getLayoutParams();
+        float density = getResources().getDisplayMetrics().density;
+        final int height = (int) ((ScreenUtils.getScreenWidth(this)) / 4 - density * 1 + 0.5);
+        params.height = height;
+        params.width = height;
+        mask.setLayoutParams(params);
+        mask.setVisibility(config.maxSelectNum == mAdapter.getSelectedData().size() ? View.VISIBLE : View.GONE);
+
+        if (config.isCamera) {
+            config.isCamera = StringUtils.isCamera(title);
+            ViewGroup.LayoutParams layoutParams = surf.getLayoutParams();
+            layoutParams.height = height;
+            layoutParams.width = height;
+            surf.setLayoutParams(layoutParams);
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
+                    sumScroll += dy;
+                    Log.d(TAG, "dy:" + dy + " sumScroll : " + sumScroll + "  height " + height);
+                    if (surf.getVisibility() == View.VISIBLE && sumScroll > 0) {
+                        surf.setVisibility(View.GONE);
+                    } else if (surf.getVisibility() != View.VISIBLE && sumScroll <= 0) {
+                        surf.setVisibility(View.VISIBLE);
+                    }
+                    if (mask.getVisibility() == View.VISIBLE) {
+                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mask.getLayoutParams();
+                        params.topMargin = -sumScroll;
+                        mask.setLayoutParams(params);
+                    }
+                }
+            });
+        }
+
+
     }
 
     @Override
@@ -239,8 +293,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     /**
      * getPageLimit
      * # If the user clicks to take a photo and returns, the Limit should be adjusted dynamically
-     *
-     * @return
      */
     private int getPageLimit() {
         int bucketId = ValueOf.toInt(mTvPictureTitle.getTag(R.id.view_tag));
@@ -1433,6 +1485,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 }
             }
         }
+        mAdapter.notifyDataSetChanged();
+        mask.setVisibility(selectData.size() == config.maxSelectNum ? View.VISIBLE : View.GONE);
     }
 
 
@@ -2135,6 +2189,14 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             mHandler.removeCallbacks(mRunnable);
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+
+        if (camera != null) {
+            Surface surface = camera.getHolder().getSurface();
+            if (surface.isValid()) {
+                surface.release();
+                camera = null;
+            }
         }
     }
 

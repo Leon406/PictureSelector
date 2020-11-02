@@ -266,6 +266,9 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                     changeCheckboxState(contentHolder, image);
                 }
             });
+
+            contentHolder.ivBorder.setVisibility(isSelected(image) ? View.VISIBLE : View.GONE);
+            contentHolder.ivMask.setVisibility(selectData.size() >= config.maxSelectNum && !isSelected(image) ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -351,6 +354,8 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
         TextView tvDuration, tvIsGif, tvLongChart;
         View contentView;
         View btnCheck;
+        View ivMask;
+        View ivBorder;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -361,6 +366,8 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             tvDuration = itemView.findViewById(R.id.tv_duration);
             tvIsGif = itemView.findViewById(R.id.tv_isGif);
             tvLongChart = itemView.findViewById(R.id.tv_long_chart);
+            ivMask = (ImageView) itemView.findViewById(R.id.iv_mask);
+            ivBorder = (ImageView) itemView.findViewById(R.id.iv_border);
             if (config.style != null) {
                 if (config.style.pictureCheckedStyle != 0) {
                     tvCheck.setBackgroundResource(config.style.pictureCheckedStyle);
@@ -649,6 +656,7 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
      */
     public void selectImage(ViewHolder holder, boolean isChecked) {
         holder.tvCheck.setSelected(isChecked);
+        holder.tvCheck.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         if (isChecked) {
             holder.ivPicture.setColorFilter(ContextCompat.getColor
                     (context, R.color.picture_color_80), PorterDuff.Mode.SRC_ATOP);

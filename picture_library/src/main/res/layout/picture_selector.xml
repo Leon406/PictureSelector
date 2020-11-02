@@ -7,7 +7,34 @@
     android:background="@color/picture_color_white"
     android:fitsSystemWindows="true"
     tools:context="com.luck.picture.lib.PictureSelectorActivity">
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/surf"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/titleViewBg">
 
+        <com.luck.picture.lib.widget.CameraPreviewView
+            android:id="@+id/camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp" />
+    </FrameLayout>
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/mask"
+        android:clickable="true"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/titleViewBg">
+        <ImageView
+            android:id="@+id/iv_mask"
+            android:visibility="visible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/picture_color_transparent_mask" />
+    </FrameLayout>
     <include layout="@layout/picture_title_bar" />
 
     <RelativeLayout

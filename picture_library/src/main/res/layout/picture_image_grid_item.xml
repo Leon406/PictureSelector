@@ -9,6 +9,20 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
+    <ImageView
+        android:id="@+id/iv_border"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/picture_shape_red_border"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/picture_color_transparent_mask"
+        android:visibility="visible" />
+
     <TextView
         android:id="@+id/tvCheck"
         android:layout_width="wrap_content"

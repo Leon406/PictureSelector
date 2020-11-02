@@ -20,7 +20,7 @@ import java.io.IOException;
  * @describe：VideoRequestHandler
  */
 public class VideoRequestHandler extends RequestHandler {
-    public String SCHEME_VIDEO = "video";
+    public final String SCHEME_VIDEO = "video";
 
     @Override
     public boolean canHandleRequest(Request data) {

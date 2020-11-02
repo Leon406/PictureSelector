@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
 
@@ -29,6 +30,17 @@ public class StringUtils {
         placeSpan.setSpan(new RelativeSizeSpan(0.8f), str.length(), sumText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         tv.setText(placeSpan);
+    }
+
+    public static boolean isCamera(String title) {
+        if (!TextUtils.isEmpty(title) && title.startsWith("相机胶卷")
+                || title.startsWith("CameraRoll")
+                || title.startsWith("所有音频")
+                || title.startsWith("All audio")) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

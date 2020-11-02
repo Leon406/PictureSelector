@@ -65,7 +65,7 @@ public final class PictureSelector {
     /**
      * @param chooseMode Select the type of picture you want，all or Picture or Video .
      * @return LocalMedia PictureSelectionModel
-     * Use {@link PictureMimeType.ofAll(),ofImage(),ofVideo(),ofAudio()}.
+     * Use {@link PictureMimeType#ofAll(),PictureMimeType#ofImage(),PictureMimeType#ofVideo(),PictureMimeType#ofAudio()}.
      */
     public PictureSelectionModel openGallery(int chooseMode) {
         return new PictureSelectionModel(this, chooseMode);
@@ -74,7 +74,7 @@ public final class PictureSelector {
     /**
      * @param chooseMode Select the type of picture you want，Picture or Video.
      * @return LocalMedia PictureSelectionModel
-     * Use {@link PictureMimeType.ofImage(),ofVideo()}.
+     * Use {@link PictureMimeType#ofImage(),PictureMimeType#ofVideo()}.
      */
     public PictureSelectionModel openCamera(int chooseMode) {
         return new PictureSelectionModel(this, chooseMode, true);
@@ -171,15 +171,15 @@ public final class PictureSelector {
      *
      * @param position
      * @param medias
-     * @param directory_path
+     * @param directoryPath
      */
-    public void externalPicturePreview(int position, String directory_path, List<LocalMedia> medias, int enterAnimation) {
+    public void externalPicturePreview(int position, String directoryPath, List<LocalMedia> medias, int enterAnimation) {
         if (!DoubleUtils.isFastDoubleClick()) {
             if (getActivity() != null) {
                 Intent intent = new Intent(getActivity(), PictureExternalPreviewActivity.class);
                 intent.putParcelableArrayListExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST, (ArrayList<? extends Parcelable>) medias);
                 intent.putExtra(PictureConfig.EXTRA_POSITION, position);
-                intent.putExtra(PictureConfig.EXTRA_DIRECTORY_PATH, directory_path);
+                intent.putExtra(PictureConfig.EXTRA_DIRECTORY_PATH, directoryPath);
                 getActivity().startActivity(intent);
                 getActivity().overridePendingTransition(enterAnimation != 0
                         ? enterAnimation : R.anim.picture_anim_enter, R.anim.picture_anim_fade_in);

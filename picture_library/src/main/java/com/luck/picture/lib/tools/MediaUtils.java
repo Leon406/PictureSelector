@@ -149,7 +149,6 @@ public class MediaUtils {
     /**
      * get Local video duration
      *
-     * @return
      */
     private static long getLocalDuration(String path) {
         try {
@@ -167,7 +166,6 @@ public class MediaUtils {
     /**
      * get Local image width or height for api 29
      *
-     * @return
      */
     public static int[] getImageSizeForUrlToAndroidQ(Context context, String url) {
         int[] size = new int[2];
