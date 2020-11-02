@@ -839,7 +839,7 @@ public class PictureSelectionModel {
     }
 
     /**
-     * Extra used with {@link #Environment.getExternalStorageDirectory() +  File.separator + "CustomCamera" + File.separator}  to indicate that
+     * Extra used with {@link #Environment#getExternalStorageDirectory() +  File.separator + "CustomCamera" + File.separator}  to indicate that
      *
      * @param outPutCameraPath Camera save path 只支持Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
      * @return

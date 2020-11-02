@@ -1,0 +1,92 @@
+/**
+ * 上传到local maven
+ */
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+/// 上传到私服
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: properties.getProperty("POM_URL")) {
+                authentication(userName: properties.getProperty("nexus.user"), password: properties.getProperty("nexus.password"))
+            }
+
+            pom.groupId = groupId
+            pom.artifactId = artifactId
+            pom.version = ver
+
+            pom.project {
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+if (project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')) {
+    println('--------android--------')
+    //android  javadoc和sources文件的生成
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+    task javadoc(type: Javadoc) {
+        failOnError false //必须添加以免出错
+        if (!project.plugins.hasPlugin('kotlin-android')) {
+            source = android.sourceSets.main.java.srcDirs
+        }
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        exclude '**/internal/*'
+        include '**/*.java'
+        options.encoding = "utf-8"
+        if (JavaVersion.current().isJava8Compatible()) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+
+} else {
+    println('--------java--------')
+    //java  javadoc和sources文件的生成
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+//在构建生成的时候有可能会报GBK编码等错误，可能需要添加UTF-8声明，如下：
+javadoc {
+    options {
+        //如果你的项目里面有中文注释的话，必须将格式设置为UTF-8，不然会出现乱码
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+    }
+}

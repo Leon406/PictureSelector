@@ -1,0 +1,119 @@
+/** 以下开始是将Android Library上传到jcenter的相关配置**/
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+
+//项目的版本控制地址
+
+//项目主页
+def siteUrl = 'https://github.com/Leon406'    // project homepage
+def gitUrl = 'https://github.com/Leon406' // project git到组织名称名字，必须填写
+group = groupId
+//发布到JCenter上的项目名字，必须填写
+// 版本号，下次更新是只需要更改版本号即可
+version = ver
+/**  上面配置后上传至jcenter后的编译路径是这样的： compile 'cn.bluemobi.dylan:sqlitelibrary:1.0'  **/
+Properties properties = new Properties()
+properties.load(rootProject.file('local.properties').newDataInputStream())
+bintray {
+//    user = "leon4062"    //读取 local.properties 文件里面的 bintray.user
+//    key = "4c32159d739e260877a6ac828a48d23fb2ce43ae"   //读取 local.properties 文件里面的 bintray.apikey
+    user =  properties.getProperty("bintray.user")    //读取 local.properties 文件里面的 bintray.user
+    key =  properties.getProperty("bintray.apikey")   //读取 local.properties 文件里面的 bintray.apikey
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = artifactId   //发布到JCenter上的项目名字，必须填写
+        desc = 'This is lib'    //项目描述
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
+
+// 配置maven库，生成POM.xml文件
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                name artifactId
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer { //填写的一些基本信息
+                        id 'leon'
+                        name 'leonlambett'
+                        email 'deadogone@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+//上传到jcenter
+
+
+if (project.getPlugins().hasPlugin('com.android.application') || project.getPlugins().hasPlugin('com.android.library')) {
+    println('--------android--------')
+    //android  javadoc和sources文件的生成
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+    task javadoc(type: Javadoc) {
+        failOnError false //必须添加以免出错
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+
+} else {
+    println('--------java--------')
+    //java  javadoc和sources文件的生成
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+//在构建生成的时候有可能会报GBK编码等错误，可能需要添加UTF-8声明，如下：
+javadoc {
+    options {
+        //如果你的项目里面有中文注释的话，必须将格式设置为UTF-8，不然会出现乱码
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+    }
+}
+

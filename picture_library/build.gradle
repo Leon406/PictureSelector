@@ -37,5 +37,13 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${cfgs.camerax_version}"
     implementation "androidx.localbroadcastmanager:localbroadcastmanager:${cfgs.localbroadcastmanager}"
     implementation "androidx.camera:camera-view:${cfgs.camerax_view}"
-    api project(':ucrop')
+    api "com.shiduai.android:ucrop:2.0.1"
+//    api project(':ucrop')
 }
+ext {
+    groupId = "com.shiduai.android"
+    artifactId = "pictureselector"
+    ver = "2.0.2.a"
+}
+//apply from: "../bintrayupload.gradle"
+apply from: "../uploadlocal.gradle"
