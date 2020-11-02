@@ -31,6 +31,10 @@ import com.luck.picture.lib.tools.SdkVersionUtils;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import io.reactivex.Observable;
+import me.leon.rxresult.Result;
+import me.leon.rxresult.RxActivityResult;
+
 import static android.os.Build.VERSION_CODES.KITKAT;
 
 /**
@@ -40,6 +44,7 @@ import static android.os.Build.VERSION_CODES.KITKAT;
  */
 
 public class PictureSelectionModel {
+    public static final int ERR_CODE = -66;
     private PictureSelectionConfig selectionConfig;
     private PictureSelector selector;
 
@@ -67,7 +72,6 @@ public class PictureSelectionModel {
     }
 
     /**
-     * @param locale Language
      * @return PictureSelectionModel
      */
     public PictureSelectionModel setLanguage(int language) {
@@ -83,7 +87,6 @@ public class PictureSelectionModel {
      * time the activity is visible.
      *
      * @param requestedOrientation An orientation constant as used in
-     *                             {@link ActivityInfo#screenOrientation ActivityInfo.screenOrientation}.
      */
     public PictureSelectionModel setRequestedOrientation(int requestedOrientation) {
         selectionConfig.requestedOrientation = requestedOrientation;
@@ -472,7 +475,7 @@ public class PictureSelectionModel {
 
 
     /**
-     * @param Select whether to return directly
+     * @param isSingleDirectReturn whether to return directly
      * @return
      */
     public PictureSelectionModel isSingleDirectReturn(boolean isSingleDirectReturn) {
@@ -936,7 +939,15 @@ public class PictureSelectionModel {
     }
 
     /**
-     * @param Specify get image format
+     * @param isHideBottomControls Previews do not show bottom, and change tilte bar right text to finish
+     */
+    public PictureSelectionModel isHideBottomControls(boolean isHideBottomControls) {
+        selectionConfig.isHideBottomControls = isHideBottomControls;
+        return this;
+    }
+
+    /**
+     * @param specifiedFormat get image format
      * @return
      */
     public PictureSelectionModel querySpecifiedFormatSuffix(String specifiedFormat) {
@@ -1266,6 +1277,41 @@ public class PictureSelectionModel {
                     windowAnimationStyle.activityEnterAnimation :
                     R.anim.picture_anim_enter, R.anim.picture_anim_fade_in);
         }
+    }
+
+    /**
+     * Start to select media and handle with Fragment callback.
+     */
+    public Observable<Result<Fragment>> forFragmentResult() {
+        Fragment fragment = selector.getFragment();
+
+        if (fragment == null) {
+            throw new NullPointerException("Fragment can not be null");
+        }
+        if (!DoubleUtils.isFastDoubleClick()) {
+
+            Intent intent = new Intent(fragment.getActivity(), PictureSelectorActivity.class);
+            return RxActivityResult.on(fragment).startIntent(intent);
+            //activity.overridePendingTransition(R.anim.a5, 0);
+        }
+        return Observable.just(new Result(fragment, -66, ERR_CODE, null));
+    }
+
+    /**
+     * Start to select media and handle with Activity callback.
+     */
+
+    public Observable<Result<Activity>> forActivityResult() {
+        Activity activity = selector.getActivity();
+        if (activity == null) {
+            throw new NullPointerException("Activity can not be null");
+        }
+        if (!DoubleUtils.isFastDoubleClick()) {
+            Intent intent = new Intent(activity, PictureSelectorActivity.class);
+            return RxActivityResult.on(activity).startIntent(intent);
+            //activity.overridePendingTransition(R.anim.a5, 0);
+        }
+        return Observable.just(new Result(activity, -66, ERR_CODE, null));
     }
 
     /**

@@ -102,6 +102,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean returnEmpty;
     public boolean isDragFrame;
     public boolean isNotPreviewDownload;
+    public boolean isHideBottomControls;
     public boolean isWithVideoImage;
     public UCropOptions uCropOptions;
     public static ImageEngine imageEngine;

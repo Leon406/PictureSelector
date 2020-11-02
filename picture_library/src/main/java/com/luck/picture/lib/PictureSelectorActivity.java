@@ -157,7 +157,9 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     public int getResourceId() {
         return R.layout.picture_selector;
     }
+
     private int sumScroll;
+
     @Override
     protected void initWidgets() {
         super.initWidgets();
@@ -183,8 +185,13 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             titleViewBg.setOnClickListener(this);
         }
         mTvPicturePreview.setVisibility(config.chooseMode != PictureMimeType.ofAudio() && config.enablePreview ? View.VISIBLE : View.GONE);
-        mBottomLayout.setVisibility(config.selectionMode == PictureConfig.SINGLE
-                && config.isSingleDirectReturn ? View.GONE : View.VISIBLE);
+        // TODO: 2020/11/2 0002
+//        mBottomLayout.setVisibility(config.selectionMode == PictureConfig.SINGLE
+//                && config.isSingleDirectReturn ? View.GONE : View.VISIBLE);
+        mBottomLayout.setVisibility(config.isHideBottomControls ? View.GONE : View.VISIBLE);
+        mTvPictureRight.setText(config.isHideBottomControls ? R.string.picture_confirm : R.string.picture_cancel);
+
+
         mIvPictureLeftBack.setOnClickListener(this);
         mTvPictureRight.setOnClickListener(this);
         mTvPictureOk.setOnClickListener(this);
@@ -193,6 +200,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         mIvArrow.setOnClickListener(this);
         String title = config.chooseMode == PictureMimeType.ofAudio() ?
                 getString(R.string.picture_all_audio) : getString(R.string.picture_camera_roll);
+
         mTvPictureTitle.setText(title);
         mTvPictureTitle.setTag(R.id.view_tag, -1);
         folderWindow = new FolderPopWindow(this, config);
@@ -780,7 +788,11 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             if (folderWindow != null && folderWindow.isShowing()) {
                 folderWindow.dismiss();
             } else {
-                onBackPressed();
+                if (config.isHideBottomControls && id == R.id.picture_right) {
+                    onComplete();
+                } else {
+                    onBackPressed();
+                }
             }
             return;
         }

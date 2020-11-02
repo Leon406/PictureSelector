@@ -468,4 +468,20 @@ public class LocalMedia implements Parcelable {
             return new LocalMedia[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "LocalMedia{" +
+                "path='" + path + '\'' +
+                ", realPath='" + realPath + '\'' +
+                ", originalPath='" + originalPath + '\'' +
+                ", compressPath='" + compressPath + '\'' +
+                ", cutPath='" + cutPath + '\'' +
+                ", androidQToPath='" + androidQToPath + '\'' +
+                ", isCut=" + isCut +
+                ", mimeType='" + mimeType + '\'' +
+                ", compressed=" + compressed +
+                ", fileName='" + fileName + '\'' +
+                '}';
+    }
 }
