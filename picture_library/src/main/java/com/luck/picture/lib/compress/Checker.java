@@ -36,6 +36,8 @@ enum Checker {
 
     /**
      * Determine if it is JPG.
+     *
+     * @param is image file mimeType
      */
     boolean isJPG(String mimeType) {
         if (TextUtils.isEmpty(mimeType)) {

@@ -26,7 +26,7 @@ public class VoiceUtils {
         return instance;
     }
 
-    private VoiceUtils() {
+    public VoiceUtils() {
     }
 
     private SoundPool soundPool;
