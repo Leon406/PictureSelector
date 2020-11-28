@@ -33,9 +33,9 @@ android {
 }
 
 dependencies {
-//    implementation project(':picture_library')
+    implementation project(':picture_library')
 //    implementation "com.shiduai.android:ucrop:2.0.1"
-    implementation "com.shiduai.android:pictureselector:2.0.2.a"
+//    implementation "com.shiduai.android:pictureselector:2.0.2.a"
     implementation "androidx.appcompat:appcompat:${cfgs.version_appcompat}"
     implementation "androidx.recyclerview:recyclerview:${cfgs.version_recyclerview}"
     implementation "androidx.camera:camera-core:${cfgs.camera_core_version}"

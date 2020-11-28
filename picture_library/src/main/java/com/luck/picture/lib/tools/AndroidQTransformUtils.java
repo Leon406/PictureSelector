@@ -26,19 +26,12 @@ public class AndroidQTransformUtils {
      * #耗时操作需要放在子线程中操作
      *
      * @param ctx
+     * @param uri
      * @param mineType
      * @param customFileName
      * @return
      */
     public static String copyPathToAndroidQ(Context ctx, String url, int width, int height, String mineType, String customFileName) {
-        // 这里就是利用图片加载引擎的特性，因为图片加载器加载过了图片本地就有缓存，当然前提是用户设置了缓存策略
-        if (PictureSelectionConfig.cacheResourcesEngine != null) {
-            String cachePath = PictureSelectionConfig.cacheResourcesEngine.onCachePath(ctx, url);
-            if (!TextUtils.isEmpty(cachePath)) {
-                return cachePath;
-            }
-        }
-
         // 走普通的文件复制流程，拷贝至应用沙盒内来
         BufferedSource inBuffer = null;
         try {
@@ -72,7 +65,8 @@ public class AndroidQTransformUtils {
      * @param outUri
      */
     public static boolean copyPathToDCIM(Context context, File inFile, Uri outUri) {
-        try( OutputStream fileOutputStream = context.getContentResolver().openOutputStream(outUri)) {
+        try {
+            OutputStream fileOutputStream = context.getContentResolver().openOutputStream(outUri);
             return PictureFileUtils.bufferCopy(inFile, fileOutputStream);
         } catch (Exception e) {
             e.printStackTrace();

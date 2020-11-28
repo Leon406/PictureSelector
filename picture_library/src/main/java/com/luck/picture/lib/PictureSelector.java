@@ -129,10 +129,9 @@ public final class PictureSelector {
      */
     public static List<LocalMedia> obtainSelectorList(Bundle bundle) {
         if (bundle != null) {
-            List<LocalMedia> selectionMedias = bundle.getParcelableArrayList(PictureConfig.EXTRA_SELECT_LIST);
-            return selectionMedias == null ? new ArrayList<>() : selectionMedias;
+           return bundle.getParcelableArrayList(PictureConfig.EXTRA_SELECT_LIST);
         }
-        return new ArrayList<>();
+        return null;
     }
 
     /**
@@ -171,15 +170,15 @@ public final class PictureSelector {
      *
      * @param position
      * @param medias
-     * @param directoryPath
+     * @param directory_path
      */
-    public void externalPicturePreview(int position, String directoryPath, List<LocalMedia> medias, int enterAnimation) {
+    public void externalPicturePreview(int position, String directory_path, List<LocalMedia> medias, int enterAnimation) {
         if (!DoubleUtils.isFastDoubleClick()) {
             if (getActivity() != null) {
                 Intent intent = new Intent(getActivity(), PictureExternalPreviewActivity.class);
                 intent.putParcelableArrayListExtra(PictureConfig.EXTRA_PREVIEW_SELECT_LIST, (ArrayList<? extends Parcelable>) medias);
                 intent.putExtra(PictureConfig.EXTRA_POSITION, position);
-                intent.putExtra(PictureConfig.EXTRA_DIRECTORY_PATH, directoryPath);
+                intent.putExtra(PictureConfig.EXTRA_DIRECTORY_PATH, directory_path);
                 getActivity().startActivity(intent);
                 getActivity().overridePendingTransition(enterAnimation != 0
                         ? enterAnimation : R.anim.picture_anim_enter, R.anim.picture_anim_fade_in);

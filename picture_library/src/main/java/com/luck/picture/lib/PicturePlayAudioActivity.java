@@ -125,7 +125,7 @@ public class PicturePlayAudioActivity extends PictureBaseActivity implements Vie
             handler.removeCallbacks(runnable);
             new Handler().postDelayed(() -> stop(audio_path), 30);
             try {
-                closeActivity();
+                exit();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -159,6 +159,8 @@ public class PicturePlayAudioActivity extends PictureBaseActivity implements Vie
 
     /**
      * 停止播放
+     *
+     * @param path
      */
     public void stop(String path) {
         if (mediaPlayer != null) {
@@ -194,7 +196,7 @@ public class PicturePlayAudioActivity extends PictureBaseActivity implements Vie
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        closeActivity();
+        exit();
     }
 
     @Override
