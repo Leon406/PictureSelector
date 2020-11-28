@@ -12,7 +12,7 @@
         android:id="@+id/surf"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_below="@+id/titleViewBg">
+        android:layout_below="@+id/titleBar">
 
         <com.luck.picture.lib.widget.CameraPreviewView
             android:id="@+id/camera"
@@ -27,7 +27,7 @@
         android:clickable="true"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_below="@+id/titleViewBg">
+        android:layout_below="@+id/titleBar">
         <ImageView
             android:id="@+id/iv_mask"
             android:visibility="visible"
@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:background="@color/picture_color_transparent_mask" />
     </FrameLayout>
-    <include layout="@layout/picture_title_bar" />
+
 
     <RelativeLayout
         android:id="@+id/rl_bottom"

@@ -394,9 +394,9 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                     : context.getString(R.string.picture_take_picture);
             tvCamera.setText(title);
 			  if (PictureSelectionConfig.uiStyle != null) {
-                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor != 0) {
-                    itemView.setBackgroundColor(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor);
-                }
+//                if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor != 0) {
+//                    itemView.setBackgroundColor(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_backgroundColor);
+//                }
                 if (PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize != 0) {
                     tvCamera.setTextSize(PictureSelectionConfig.uiStyle.picture_adapter_item_camera_textSize);
                 }

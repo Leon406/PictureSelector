@@ -1,6 +1,7 @@
 package com.luck.picture.lib;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -1004,8 +1005,12 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     }
 
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
+
+        Log.i(TAG, "onClicked  " + v);
+
         int id = v.getId();
         if (id == R.id.pictureLeftBack || id == R.id.picture_right) {
             if (folderWindow != null && folderWindow.isShowing()) {
@@ -1019,12 +1024,16 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             }
             return;
         }
-        if (id == R.id.picture_title || id == R.id.ivArrow) {
+        if (id == R.id.picture_title || id == R.id.ivArrow || id == R.id.viewClickMask) {
+
+            Log.i(TAG, "onClicked picture_title ");
             if (folderWindow.isShowing()) {
                 folderWindow.dismiss();
             } else {
+                Log.i(TAG, "onClicked picture_title  not show");
                 if (!folderWindow.isEmpty()) {
                     folderWindow.showAsDropDown(mTitleBar);
+                    Log.i(TAG, "onClicked picture_title   show");
                     if (!config.isSingleDirectReturn) {
                         List<LocalMedia> selectedImages = mAdapter.getSelectedData();
                         folderWindow.updateFolderCheckStatus(selectedImages);
