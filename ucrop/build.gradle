@@ -38,6 +38,6 @@ dependencies {
 ext {
     groupId = "com.shiduai.android"
     artifactId = "ucrop"
-    ver = "2.0.1"
+    ver = "2.0.2"
 }
 apply from: "../uploadlocal.gradle"

@@ -570,6 +570,17 @@
                     android:textColor="@color/app_color_53575e"
                     android:textSize="14sp"
                     android:visibility="gone" />
+
+                <CheckBox
+                    android:id="@+id/cb_hide_picture_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:checked="true"
+                    android:text="是否隐藏底部"
+                    android:textColor="@color/app_color_53575e"
+                    android:textSize="14sp"
+                    android:visibility="visible" />
             </LinearLayout>
         </ScrollView>
 

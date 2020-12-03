@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="q">
-        <!-- 全面屏-->
+        <!-- 全面屏 -->
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />

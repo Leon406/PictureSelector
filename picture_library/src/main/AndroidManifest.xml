@@ -30,6 +30,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity android:name="me.leon.rxresult.HolderActivity"/>
         <activity
             android:name=".PictureSelectorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />

@@ -11,6 +11,8 @@ import com.luck.picture.lib.app.IApp;
 import com.luck.picture.lib.app.PictureAppMaster;
 import com.luck.picture.lib.engine.PictureSelectorEngine;
 
+import me.leon.rxresult.RxActivityResult;
+
 
 /**
  * @author：luck

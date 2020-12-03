@@ -64,6 +64,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+
 /**
  * @author：luck
  * @data：2019/12/20 晚上 23:12
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cb_preview_img, cb_preview_video, cb_crop, cb_compress,
             cb_mode, cb_hide, cb_crop_circular, cb_styleCrop, cb_showCropGrid,
             cb_showCropFrame, cb_preview_audio, cb_original, cb_single_back,
-            cb_custom_camera, cbPage, cbEnabledMask;
+            cb_custom_camera, cbPage, cbEnabledMask, cb_hide_picture_bottom;
     private int themeId;
     private int chooseMode = PictureMimeType.ofAll();
     private boolean isWeChatStyle;
@@ -144,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cb_single_back = findViewById(R.id.cb_single_back);
         cb_custom_camera = findViewById(R.id.cb_custom_camera);
         cb_hide = findViewById(R.id.cb_hide);
+        cb_hide_picture_bottom = findViewById(R.id.cb_hide_picture_bottom);
         cb_crop_circular = findViewById(R.id.cb_crop_circular);
         rgb_crop.setOnCheckedChangeListener(this);
         rgb_style.setOnCheckedChangeListener(this);
@@ -426,10 +430,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onAddPicClick() {
             boolean mode = cb_mode.isChecked();
+            Log.i("leon66","click");
             if (mode) {
                 // 进入相册 以下是例子：不需要的api可以不写
                 PictureSelector.create(MainActivity.this)
                         .openGallery(chooseMode)// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
+                        .isHideBottomControls(cb_hide_picture_bottom.isChecked())
                         .imageEngine(GlideEngine.createGlideEngine())// 外部传入图片加载引擎，必传项
                         //.theme(themeId)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style v2.3.3后 建议使用setPictureStyle()动态方式
                         .setPictureUIStyle(mSelectorUIStyle)
@@ -448,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //.setOutputCameraPath(createCustomCameraOutPath())// 自定义相机输出目录
                         //.setButtonFeatures(CustomCameraView.BUTTON_STATE_BOTH)// 设置自定义相机按钮状态
                         .maxSelectNum(maxSelectNum)// 最大图片选择数量
-                        .minSelectNum(1)// 最小选择数量
+                        .minSelectNum(0)// 最小选择数量
                         .maxVideoSelectNum(1) // 视频最大选择数量
                         //.minVideoSelectNum(1)// 视频最小选择数量
                         //.closeAndroidQChangeVideoWH(!SdkVersionUtils.checkedAndroid_Q())// 关闭在AndroidQ下获取图片或视频宽高相反自动转换
@@ -514,7 +520,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //.scaleEnabled(false)// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
                         //.forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
-                        .forResult(new MyResultCallback(mAdapter));
+                        .forActivityResult()
+                        .filter(result -> result.resultCode() == -1 && result.data() != null && !PictureSelector.obtainMultipleResult(result.data()).isEmpty())
+                        .map(result -> PictureSelector.obtainMultipleResult(result.data()))
+//                        .flatMap(Observable::fromIterable)
+                        .subscribe(list->{
+                            mAdapter.setList(list);
+                            mAdapter.notifyDataSetChanged();
+                            for (LocalMedia media : list) {
+                                Log.i(TAG, "是否压缩:" + media.isCompressed());
+                                Log.i(TAG, "压缩:" + media.getCompressPath());
+                                Log.i(TAG, "原图:" + media.getPath());
+                                Log.i(TAG, "绝对路径:" + media.getRealPath());
+                                Log.i(TAG, "是否裁剪:" + media.isCut());
+                                Log.i(TAG, "裁剪:" + media.getCutPath());
+                                Log.i(TAG, "是否开启原图:" + media.isOriginal());
+                                Log.i(TAG, "原图路径:" + media.getOriginalPath());
+                                Log.i(TAG, "Android Q 特有Path:" + media.getAndroidQToPath());
+                                Log.i(TAG, "宽高: " + media.getWidth() + "x" + media.getHeight());
+                                Log.i(TAG, "Size: " + media.getSize());
+                            }
+                            // TODO 可以通过PictureSelectorExternalUtils.getExifInterface();方法获取一些额外的资源信息，如旋转角度、经纬度等信息
+                        })
+                ;
+
+//                        .forResult(new MyResultCallback(mAdapter));
             } else {
                 // 单独拍照
                 PictureSelector.create(MainActivity.this)

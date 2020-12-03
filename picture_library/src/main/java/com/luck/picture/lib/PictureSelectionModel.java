@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
@@ -993,7 +994,43 @@ public class PictureSelectionModel {
         selectionConfig.specifiedFormat = specifiedFormat;
         return this;
     }
+    /**
+     * Start to select media and handle with Fragment callback.
+     */
+    public Observable<Result<Fragment>> forFragmentResult() {
+        Fragment fragment = selector.getFragment();
 
+        if (fragment == null) {
+            throw new NullPointerException("Fragment can not be null");
+        }
+        if (!DoubleUtils.isFastDoubleClick()) {
+
+            Intent intent = new Intent(fragment.getActivity(), PictureSelectorActivity.class);
+            return RxActivityResult.on(fragment).startIntent(intent);
+            //activity.overridePendingTransition(R.anim.a5, 0);
+        }
+        return Observable.just(new Result(fragment, -66, ERR_CODE, null));
+    }
+
+    /**
+     * Start to select media and handle with Activity callback.
+     */
+
+    public Observable<Result<Activity>> forActivityResult() {
+        Activity activity = selector.getActivity();
+        Log.i("leon66","in");
+        if (activity == null) {
+            throw new NullPointerException("Activity can not be null");
+        }
+        if (!DoubleUtils.isFastDoubleClick()) {
+            Log.i("leon66","start");
+            Intent intent = new Intent(activity, PictureSelectorActivity.class);
+            return RxActivityResult.on(activity).startIntent(intent);
+            //activity.overridePendingTransition(R.anim.a5, 0);
+        }
+        Log.i("leon66","err");
+        return Observable.just(new Result(activity, -66, ERR_CODE, null));
+    }
     /**
      * @param openClickSound Whether to open click voice
      * @return Use {link .isOpenClickSound()}

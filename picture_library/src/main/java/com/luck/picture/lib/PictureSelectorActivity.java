@@ -280,7 +280,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 @Override
                 public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
                     sumScroll += dy;
-                    Log.d(TAG, "dy:" + dy + " sumScroll : " + sumScroll + "  height " + height);
+//                    Log.d(TAG, "dy:" + dy + " sumScroll : " + sumScroll + "  height " + height);
                     if (surf.getVisibility() == View.VISIBLE && sumScroll > 0) {
                         surf.setVisibility(View.GONE);
                     } else if (surf.getVisibility() != View.VISIBLE && sumScroll <= 0) {
@@ -435,7 +435,11 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 container.setBackgroundColor(PictureSelectionConfig.uiStyle.picture_container_backgroundColor);
             }
             if (!TextUtils.isEmpty(PictureSelectionConfig.uiStyle.picture_top_titleRightDefaultText)) {
-                mTvPictureRight.setText(PictureSelectionConfig.uiStyle.picture_top_titleRightDefaultText);
+                if (config.isHideBottomControls) {
+                    mTvPictureRight.setText(R.string.picture_confirm);
+                } else {
+                    mTvPictureRight.setText(PictureSelectionConfig.uiStyle.picture_top_titleRightDefaultText);
+                }
             }
             if (!TextUtils.isEmpty(PictureSelectionConfig.uiStyle.picture_bottom_completeDefaultText)) {
                 mTvPictureOk.setText(PictureSelectionConfig.uiStyle.picture_bottom_completeDefaultText);
@@ -528,7 +532,11 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 container.setBackgroundColor(PictureSelectionConfig.style.pictureContainerBackgroundColor);
             }
             if (!TextUtils.isEmpty(PictureSelectionConfig.style.pictureRightDefaultText)) {
-                mTvPictureRight.setText(PictureSelectionConfig.style.pictureRightDefaultText);
+                if (config.isHideBottomControls) {
+                    mTvPictureRight.setText(R.string.picture_confirm);
+                } else {
+                    mTvPictureRight.setText(PictureSelectionConfig.style.pictureRightDefaultText);
+                }
             }
             if (!TextUtils.isEmpty(PictureSelectionConfig.style.pictureUnCompleteText)) {
                 mTvPictureOk.setText(PictureSelectionConfig.style.pictureUnCompleteText);
@@ -1123,6 +1131,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                         return;
                     }
                 }
+
                 if (config.minVideoSelectNum > 0) {
                     if (videoSize < config.minVideoSelectNum) {
                         showPromptDialog(getString(R.string.picture_min_video_num, config.minVideoSelectNum));
