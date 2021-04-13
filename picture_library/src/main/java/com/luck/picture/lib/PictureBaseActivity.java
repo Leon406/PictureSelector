@@ -36,16 +36,12 @@ import com.luck.picture.lib.permissions.PermissionChecker;
 import com.luck.picture.lib.thread.PictureThreadUtils;
 import com.luck.picture.lib.tools.AndroidQTransformUtils;
 import com.luck.picture.lib.tools.AttrsUtils;
-import com.luck.picture.lib.tools.DateUtils;
-import com.luck.picture.lib.tools.DoubleUtils;
 import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.StringUtils;
 import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.picture.lib.tools.VoiceUtils;
-import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.model.CutInfo;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +62,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
     protected int colorPrimary, colorPrimaryDark;
     protected PictureLoadingDialog mLoadingDialog;
     protected List<LocalMedia> selectionMedias;
-    protected Handler mHandler;
+    protected Handler mHandler = new Handler(Looper.getMainLooper());
     protected View container;
     /**
      * if there more
@@ -148,16 +144,13 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         config = PictureSelectionConfig.getInstance();
         PictureLanguageUtils.setAppLanguage(getContext(), config.language);
-        if (!config.camera) {
-            setTheme(config.themeStyleId == 0 ? R.style.picture_default_style : config.themeStyleId);
-        }
+        setTheme(config.themeStyleId == 0 ? R.style.picture_default_style : config.themeStyleId);
         super.onCreate(savedInstanceState);
         newCreateEngine();
         newCreateResultCallbackListener();
         if (isRequestedOrientation()) {
             setNewRequestedOrientation();
         }
-        mHandler = new Handler(Looper.getMainLooper());
         initConfig();
         if (isImmersive()) {
             immersive();
@@ -645,31 +638,36 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
             Uri imageUri;
+            String cameraFileName = null;
+            int chooseMode = config.chooseMode == PictureConfig.TYPE_ALL ? PictureConfig.TYPE_IMAGE : config.chooseMode;
+            if (!TextUtils.isEmpty(config.cameraFileName)) {
+                boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(config.cameraFileName);
+                config.cameraFileName = !isSuffixOfImage ? StringUtils.renameSuffix(config.cameraFileName, PictureMimeType.JPEG) : config.cameraFileName;
+                cameraFileName = config.camera ? config.cameraFileName : StringUtils.rename(config.cameraFileName);
+            }
             if (SdkVersionUtils.checkedAndroid_Q()) {
-                imageUri = MediaUtils.createImageUri(getApplicationContext(), config.suffixType);
+                if (TextUtils.isEmpty(config.outPutCameraPath)) {
+                    imageUri = MediaUtils.createImageUri(this, config.cameraFileName, config.suffixType);
+                } else {
+                    File cameraFile = PictureFileUtils.createCameraFile(this,
+                            chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
+                    config.cameraPath = cameraFile.getAbsolutePath();
+                    imageUri = PictureFileUtils.parUri(this, cameraFile);
+                }
                 if (imageUri != null) {
                     config.cameraPath = imageUri.toString();
-                } else {
-                    ToastUtils.s(getContext(), "open is camera error，the uri is empty ");
-                    if (config.camera) {
-                        exit();
-                    }
-                    return;
                 }
             } else {
-                int chooseMode = config.chooseMode == PictureConfig.TYPE_ALL ? PictureConfig.TYPE_IMAGE
-                        : config.chooseMode;
-                String cameraFileName = "";
-                if (!TextUtils.isEmpty(config.cameraFileName)) {
-                    boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(config.cameraFileName);
-                    config.cameraFileName = !isSuffixOfImage ? StringUtils.renameSuffix(config.cameraFileName, PictureMimeType.JPEG) : config.cameraFileName;
-                    cameraFileName = config.camera ? config.cameraFileName : StringUtils.rename(config.cameraFileName);
-                }
-
-                File cameraFile = PictureFileUtils.createCameraFile(getApplicationContext(),
-                        chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
+                File cameraFile = PictureFileUtils.createCameraFile(this, chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
                 config.cameraPath = cameraFile.getAbsolutePath();
                 imageUri = PictureFileUtils.parUri(this, cameraFile);
+            }
+            if (imageUri == null) {
+                ToastUtils.s(getContext(), "open is camera error，the uri is empty ");
+                if (config.camera) {
+                    exit();
+                }
+                return;
             }
             config.cameraMimeType = PictureMimeType.ofImage();
             if (config.isCameraAroundState) {
@@ -688,30 +686,35 @@ public abstract class PictureBaseActivity extends AppCompatActivity {
         Intent cameraIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
             Uri videoUri;
+            String cameraFileName = null;
+            int chooseMode = config.chooseMode == PictureConfig.TYPE_ALL ? PictureConfig.TYPE_VIDEO : config.chooseMode;
+            if (!TextUtils.isEmpty(config.cameraFileName)) {
+                boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(config.cameraFileName);
+                config.cameraFileName = isSuffixOfImage ? StringUtils.renameSuffix(config.cameraFileName, PictureMimeType.MP4) : config.cameraFileName;
+                cameraFileName = config.camera ? config.cameraFileName : StringUtils.rename(config.cameraFileName);
+            }
             if (SdkVersionUtils.checkedAndroid_Q()) {
-                videoUri = MediaUtils.createVideoUri(getApplicationContext(), config.suffixType);
+                if (TextUtils.isEmpty(config.outPutCameraPath)) {
+                    videoUri = MediaUtils.createVideoUri(this, config.cameraFileName, config.suffixType);
+                } else {
+                    File cameraFile = PictureFileUtils.createCameraFile(this, chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
+                    config.cameraPath = cameraFile.getAbsolutePath();
+                    videoUri = PictureFileUtils.parUri(this, cameraFile);
+                }
                 if (videoUri != null) {
                     config.cameraPath = videoUri.toString();
-                } else {
-                    ToastUtils.s(getContext(), "open is camera error，the uri is empty ");
-                    if (config.camera) {
-                        exit();
-                    }
-                    return;
                 }
             } else {
-                int chooseMode = config.chooseMode ==
-                        PictureConfig.TYPE_ALL ? PictureConfig.TYPE_VIDEO : config.chooseMode;
-                String cameraFileName = "";
-                if (!TextUtils.isEmpty(config.cameraFileName)) {
-                    boolean isSuffixOfImage = PictureMimeType.isSuffixOfImage(config.cameraFileName);
-                    config.cameraFileName = isSuffixOfImage ? StringUtils.renameSuffix(config.cameraFileName, PictureMimeType.MP4) : config.cameraFileName;
-                    cameraFileName = config.camera ? config.cameraFileName : StringUtils.rename(config.cameraFileName);
-                }
-                File cameraFile = PictureFileUtils.createCameraFile(getApplicationContext(),
-                        chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
+                File cameraFile = PictureFileUtils.createCameraFile(this, chooseMode, cameraFileName, config.suffixType, config.outPutCameraPath);
                 config.cameraPath = cameraFile.getAbsolutePath();
                 videoUri = PictureFileUtils.parUri(this, cameraFile);
+            }
+            if (videoUri == null) {
+                ToastUtils.s(getContext(), "open is camera error，the uri is empty ");
+                if (config.camera) {
+                    exit();
+                }
+                return;
             }
             config.cameraMimeType = PictureMimeType.ofVideo();
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
