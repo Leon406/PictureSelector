@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Locale;
+import java.util.Objects;
 
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -51,20 +52,20 @@ public class PictureFileUtils {
 
     /**
      * @param context
-     * @param type
+     * @param chooseMode
      * @param format
      * @param outCameraDirectory
      * @return
      */
-    public static File createCameraFile(Context context, int type, String fileName, String format, String outCameraDirectory) {
-        return createMediaFile(context, type, fileName, format, outCameraDirectory);
+    public static File createCameraFile(Context context, int chooseMode, String fileName, String format, String outCameraDirectory) {
+        return createMediaFile(context, chooseMode, fileName, format, outCameraDirectory);
     }
 
     /**
      * 创建文件
      *
      * @param context
-     * @param type
+     * @param chooseMode
      * @param fileName
      * @param format
      * @param outCameraDirectory
@@ -74,7 +75,18 @@ public class PictureFileUtils {
         return createOutFile(context, chooseMode, fileName, format, outCameraDirectory);
     }
 
-    private static File createOutFile(Context context, int chooseMode, String fileName, String format, String outCameraDirectory) {
+    /**
+     * 创建文件
+     *
+     * @param ctx                上下文
+     * @param chooseMode         选择模式
+     * @param fileName           文件名
+     * @param format             文件格式
+     * @param outCameraDirectory 输出目录
+     * @return
+     */
+    private static File createOutFile(Context ctx, int chooseMode, String fileName, String format, String outCameraDirectory) {
+        Context context = ctx.getApplicationContext();
         File folderDir;
         if (TextUtils.isEmpty(outCameraDirectory)) {
             // 外部没有自定义拍照存储路径使用默认
@@ -92,6 +104,9 @@ public class PictureFileUtils {
         } else {
             // 自定义存储路径
             folderDir = new File(outCameraDirectory);
+            if (!Objects.requireNonNull(folderDir.getParentFile()).exists()) {
+                folderDir.getParentFile().mkdirs();
+            }
         }
         if (!folderDir.exists()) {
             folderDir.mkdirs();
@@ -557,7 +572,7 @@ public class PictureFileUtils {
      */
     public static Uri parUri(Context context, File cameraFile) {
         Uri imageUri;
-        String authority = context.getPackageName() + ".provider";
+        String authority = context.getPackageName() + ".luckProvider";
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             //通过FileProvider创建一个content类型的Uri
             imageUri = FileProvider.getUriForFile(context, authority, cameraFile);

@@ -31,8 +31,8 @@ import java.util.List;
  */
 
 public final class PictureSelectionConfig implements Parcelable {
-    public int chooseMode;
-    public boolean camera;
+    public int chooseMode = PictureMimeType.ofImage();
+    public boolean camera = false;
     public boolean isSingleDirectReturn;
     public static PictureSelectorUIStyle uiStyle;
     public static PictureParameterStyle style;
@@ -49,17 +49,17 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean isCameraAroundState;
     public boolean isAndroidQTransform;
     @StyleRes
-    public int themeStyleId;
-    public int selectionMode;
-    public int maxSelectNum;
-    public int minSelectNum;
+    public int themeStyleId = R.style.picture_default_style;
+    public int selectionMode = PictureConfig.MULTIPLE;
+    public int maxSelectNum = 9;
+    public int minSelectNum = 0;
     public int maxVideoSelectNum = 1;
-    public int minVideoSelectNum;
-    public int videoQuality;
-    public int cropCompressQuality;
+    public int minVideoSelectNum = 0;
+    public int videoQuality = 1;
+    public int cropCompressQuality = 90;
     public int videoMaxSecond;
     public int videoMinSecond;
-    public int recordVideoSecond;
+    public int recordVideoSecond = 60;
     public int recordVideoMinSecond;
     public int minimumCompressSize = PictureConfig.MAX_COMPRESS_SIZE;
     public int imageSpanCount = PictureConfig.DEFAULT_SPAN_COUNT;
@@ -67,7 +67,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public int aspect_ratio_y;
     public int cropWidth;
     public int cropHeight;
-    public int compressQuality;
+    public int compressQuality = 80;
     public float filterFileSize;
     public int language;
     public boolean isMultipleRecyclerAnimation;
@@ -77,7 +77,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean zoomAnim;
     public boolean isCompress;
     public boolean isOriginalControl;
-    public boolean isCamera;
+    public boolean isCamera = true;
     public boolean isGif;
     public boolean isWebp;
     public boolean isBmp;
@@ -109,9 +109,9 @@ public final class PictureSelectionConfig implements Parcelable {
     public UCropOptions uCropOptions;
     public static ImageEngine imageEngine;
     public static CacheResourcesEngine cacheResourcesEngine;
-    public static OnResultCallbackListener listener;
-    public static OnVideoSelectedPlayCallback customVideoPlayCallback;
-    public static OnCustomImagePreviewCallback onCustomImagePreviewCallback;
+    public static OnResultCallbackListener<LocalMedia> listener;
+    public static OnVideoSelectedPlayCallback<LocalMedia> customVideoPlayCallback;
+    public static OnCustomImagePreviewCallback<LocalMedia> onCustomImagePreviewCallback;
     public static OnCustomCameraInterfaceListener onCustomCameraInterfaceListener;
     public List<LocalMedia> selectionMedias;
     public String cameraFileName;
@@ -146,17 +146,17 @@ public final class PictureSelectionConfig implements Parcelable {
 
     public String originalPath;
     public String cameraPath;
-    public int cameraMimeType;
+    public int cameraMimeType = -1;
     public int pageSize = PictureConfig.MAX_PAGE_SIZE;
-    public boolean isPageStrategy;
+    public boolean isPageStrategy = true;
     public boolean isFilterInvalidFile;
     public boolean isMaxSelectEnabledMask;
-    public int animationMode;
-    public boolean isAutomaticTitleRecyclerTop;
+    public int animationMode = -1;
+    public boolean isAutomaticTitleRecyclerTop = true;
     public boolean isCallbackMode;
     public boolean isAndroidQChangeWH;
     public boolean isAndroidQChangeVideoWH;
-    public boolean isQuickCapture;
+    public boolean isQuickCapture = true;
     /**
      * 内测专用###########
      */

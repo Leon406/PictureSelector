@@ -462,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .isReturnEmpty(false)// 未选择数据时点击按钮是否可以返回
                         .closeAndroidQChangeWH(true)//如果图片有旋转角度则对换宽高,默认为true
                         .closeAndroidQChangeVideoWH(!SdkVersionUtils.checkedAndroid_Q())// 如果视频有旋转角度则对换宽高,默认为false
-                        //.isAndroidQTransform(true)// 是否需要处理Android Q 拷贝至应用沙盒的操作，只针对compress(false); && .isEnableCrop(false);有效,默认处理
+                        .isAndroidQTransform(false)// 是否需要处理Android Q 拷贝至应用沙盒的操作，只针对compress(false); && .isEnableCrop(false);有效,默认处理
                         .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)// 设置相册Activity方向，不设置默认使用系统
                         .isOriginalImageControl(cb_original.isChecked())// 是否显示原图控制按钮，如果设置为true则用户可以自由选择是否使用原图，压缩、裁剪功能将会失效
                         //.bindCustomPlayVideoCallback(new MyVideoSelectedPlayCallback(getContext()))// 自定义视频播放回调控制，用户可以使用自己的视频播放界面
@@ -519,8 +519,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //.rotateEnabled(false) // 裁剪是否可旋转图片
                         //.scaleEnabled(false)// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
-                        //.forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                        .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
                         .forActivityResult()
+                        .filter(r->{
+                            Log.i("leon66","forActivityResult " +PictureSelector.obtainMultipleResult(r.data()));
+                            return  true;
+                        })
                         .filter(result -> result.resultCode() == -1 && result.data() != null && !PictureSelector.obtainMultipleResult(result.data()).isEmpty())
                         .map(result -> PictureSelector.obtainMultipleResult(result.data()))
 //                        .flatMap(Observable::fromIterable)
@@ -556,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setPictureWindowAnimationStyle(mWindowAnimationStyle)// 自定义相册启动退出动画
                         .maxSelectNum(maxSelectNum)// 最大图片选择数量
                         .isUseCustomCamera(cb_custom_camera.isChecked())// 是否使用自定义相机
-                        //.setOutputCameraPath()// 自定义相机输出目录，只针对Android Q以下，例如 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) +  File.separator + "Camera" + File.separator;
+                        //.setOutputCameraPath()// 自定义相机输出目录
                         .minSelectNum(1)// 最小选择数量
                         //.querySpecifiedFormatSuffix(PictureMimeType.ofPNG())// 查询指定后缀格式资源
                         .closeAndroidQChangeWH(true)//如果图片有旋转角度则对换宽高，默认为true
@@ -609,20 +613,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @return
      */
     private String createCustomCameraOutPath() {
-        File customFile = null;
+        File customFile;
         if (SdkVersionUtils.checkedAndroid_Q()) {
-            customFile = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        }
-        if (customFile == null) {
-            // Android Q版本(沙盒机制)以后，此方式不推荐使用了
-            File directory = Environment.getExternalStorageDirectory();
-            String path = directory.getAbsolutePath() + File.separator + "CustomPictureCamera";
-            customFile = new File(path);
+            // 在Android Q上不能直接使用外部存储目录
+            customFile = getContext().getExternalFilesDir(chooseMode == PictureMimeType.ofVideo() ? Environment.DIRECTORY_MOVIES : Environment.DIRECTORY_PICTURES);
+        } else {
+            File rootFile = Environment.getExternalStorageDirectory();
+            customFile = new File(rootFile.getAbsolutePath() + File.separator + "CustomPictureCamera");
             if (!customFile.exists()) {
                 customFile.mkdirs();
             }
         }
-        return customFile.getAbsolutePath() + File.separator;
+        return customFile != null ? customFile.getAbsolutePath() + File.separator : null;
     }
 
     /**
@@ -845,6 +847,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rb_audio:
                 chooseMode = PictureMimeType.ofAudio();
                 cb_preview_audio.setVisibility(View.VISIBLE);
+                break;
+            case R.id.rb_system:
+                language = -1;
                 break;
             case R.id.rb_jpan:
                 language = LanguageConfig.JAPAN;
